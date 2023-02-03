@@ -14,6 +14,8 @@ export enum StatusCodeText {
   NO_TRACK_TO_ADD = 'No such track to add',
   NO_ALBUM_TO_ADD = 'No such album to add',
   NO_ARTIST_TO_ADD = 'No such artist to add',
+  NO_VALID_LOGIN_OR_PASSWORD = `Not valid login or password. Both should have a type of 'string'`,
+  NO_VALID_PASS_OR_OLD_PASS = `Not valid password or previos password. Both should have a type of 'string'`,
 }
 
 export enum StatusCodeMessage {
@@ -30,6 +32,8 @@ export enum StatusCodeMessage {
   noTrackToAdd,
   noAlbumToAdd,
   noArtistToAdd,
+  noValidLoginOrPassword,
+  noValidPasswordOrOldPassword,
 }
 
 export const showMessageWithStatus = (
@@ -62,6 +66,16 @@ export const showMessageWithStatus = (
       return { statusCode: 422, message: StatusCodeText.NO_ARTIST_TO_ADD };
     case StatusCodeMessage.noTrackToAdd:
       return { statusCode: 422, message: StatusCodeText.NO_TRACK_TO_ADD };
+    case StatusCodeMessage.noValidLoginOrPassword:
+      return {
+        statusCode: 400,
+        message: StatusCodeText.NO_VALID_LOGIN_OR_PASSWORD,
+      };
+    case StatusCodeMessage.noValidPasswordOrOldPassword:
+      return {
+        statusCode: 400,
+        message: StatusCodeText.NO_VALID_PASS_OR_OLD_PASS,
+      };
   }
 };
 
