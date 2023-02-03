@@ -1,4 +1,4 @@
-import { StatusCodeMessageSpec } from 'src/models/models';
+import { DataBase, StatusCodeMessageSpec } from 'src/models/models';
 
 export enum StatusCodeText {
   USER_ID_INVALID = 'User ID is invalid (not uuid).',
@@ -31,4 +31,16 @@ export const showMessageWithStatus = (
     case StatusCodeMessage.wrongWay:
       return { statusCode: 404, message: StatusCodeText.WRONG_WAY };
   }
+};
+
+export const dataBase: DataBase = {
+  users: [],
+  artists: [],
+  tracks: [],
+  albums: [],
+  favorites: {
+    artists: [],
+    tracks: [],
+    albums: [],
+  },
 };
