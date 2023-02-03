@@ -2,34 +2,66 @@ import { DataBase, StatusCodeMessageSpec } from 'src/models/models';
 
 export enum StatusCodeText {
   USER_ID_INVALID = 'User ID is invalid (not uuid).',
-  USER_DOESNOT_EXIST = `User with such ID does't exist.`,
+  TRACK_ID_INVALID = 'Track ID is invalid (not uuid).',
+  ARTIST_ID_INVALID = 'Artist ID is invalid (not uuid).',
+  ALBUM_ID_INVALID = 'ALbum ID is invalid (not uuid).',
+  RECORD_DOESNOT_EXIST = `Record with such ID does't exist.`,
   NO_REQUIRED_FIELDS = 'Not all the required fields are filled.',
-  SERVER_ERROR = 'Server error. Try again.',
-  WRONG_WAY = `Wrong request. Use like 'http://localhost:4000/api/users/{userID}'`,
+  WRONG_OLD_PASSWORD = 'Old password is wrong.',
+  NOT_FAVORITE_TRACK = 'Track is not favorite',
+  NOT_FAVORITE_ALBUM = 'Album is not favorite',
+  NOT_FAVORITE_ARTIST = 'Artist is not favorite',
+  NO_TRACK_TO_ADD = 'No such track to add',
+  NO_ALBUM_TO_ADD = 'No such album to add',
+  NO_ARTIST_TO_ADD = 'No such artist to add',
 }
 
 export enum StatusCodeMessage {
-  wrongId,
-  noSuchUser,
+  wrongUserId,
+  wrongTrackId,
+  wrongArtistId,
+  wrongAlbumId,
+  noSuchRecord,
   noRequiredFields,
-  errorOnServerSide,
-  wrongWay,
+  wrongOldPassword,
+  notFavoriteTrack,
+  notFavoriteAlbum,
+  notFavoriteArtist,
+  noTrackToAdd,
+  noAlbumToAdd,
+  noArtistToAdd,
 }
 
 export const showMessageWithStatus = (
   status: StatusCodeMessage,
 ): StatusCodeMessageSpec => {
   switch (status) {
-    case StatusCodeMessage.wrongId:
+    case StatusCodeMessage.wrongUserId:
       return { statusCode: 400, message: StatusCodeText.USER_ID_INVALID };
-    case StatusCodeMessage.noSuchUser:
-      return { statusCode: 404, message: StatusCodeText.USER_DOESNOT_EXIST };
+    case StatusCodeMessage.wrongTrackId:
+      return { statusCode: 400, message: StatusCodeText.TRACK_ID_INVALID };
+    case StatusCodeMessage.wrongAlbumId:
+      return { statusCode: 400, message: StatusCodeText.ALBUM_ID_INVALID };
+    case StatusCodeMessage.wrongArtistId:
+      return { statusCode: 400, message: StatusCodeText.ARTIST_ID_INVALID };
+    case StatusCodeMessage.noSuchRecord:
+      return { statusCode: 404, message: StatusCodeText.RECORD_DOESNOT_EXIST };
+    case StatusCodeMessage.wrongOldPassword:
+      return { statusCode: 403, message: StatusCodeText.WRONG_OLD_PASSWORD };
     case StatusCodeMessage.noRequiredFields:
       return { statusCode: 400, message: StatusCodeText.NO_REQUIRED_FIELDS };
-    case StatusCodeMessage.errorOnServerSide:
-      return { statusCode: 500, message: StatusCodeText.SERVER_ERROR };
-    case StatusCodeMessage.wrongWay:
-      return { statusCode: 404, message: StatusCodeText.WRONG_WAY };
+    case StatusCodeMessage.notFavoriteAlbum:
+      return { statusCode: 404, message: StatusCodeText.NOT_FAVORITE_ALBUM };
+    case StatusCodeMessage.notFavoriteArtist:
+      return { statusCode: 404, message: StatusCodeText.NOT_FAVORITE_ARTIST };
+    case StatusCodeMessage.notFavoriteTrack:
+      return { statusCode: 404, message: StatusCodeText.NOT_FAVORITE_TRACK };
+    case StatusCodeMessage.noAlbumToAdd:
+      return { statusCode: 422, message: StatusCodeText.NO_ALBUM_TO_ADD };
+    case StatusCodeMessage.noArtistToAdd:
+      return { statusCode: 422, message: StatusCodeText.NO_ARTIST_TO_ADD };
+    case StatusCodeMessage.noTrackToAdd:
+      return { statusCode: 422, message: StatusCodeText.NO_TRACK_TO_ADD };
   }
 };
 
