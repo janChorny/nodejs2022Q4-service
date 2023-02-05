@@ -11,13 +11,18 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { TrackService } from 'src/track/track.service';
+import { validate, version } from 'uuid';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
 import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
 
 @Controller('album')
 export class AlbumController {
-  constructor(private albumService: AlbumService) {}
+  constructor(
+    private albumService: AlbumService,
+    private trackService: TrackService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -50,6 +55,13 @@ export class AlbumController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateAlbumDTO: UpdateAlbumDTO,
   ) {
+    const { name, year } = updateAlbumDTO;
+    if (typeof name !== 'string' || typeof year !== 'number') {
+      throw new HttpException(
+        `Not all the provided fields are valid`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const album = this.albumService.getAlbum(id);
     if (!album) {
       throw new HttpException(
@@ -64,6 +76,15 @@ export class AlbumController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = this.trackService.getTrackByAlbum(id);
+    if (track) {
+      this.trackService.updateTrack(track.id, {
+        artistId: track.artistId,
+        name: track.name,
+        albumId: null,
+        duration: track.duration,
+      });
+    }
     const album = this.albumService.getAlbum(id);
     if (!album) {
       throw new HttpException(

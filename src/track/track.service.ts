@@ -46,4 +46,8 @@ export class TrackService {
   getTrackByArtist(id: string) {
     return dataBase.tracks.find((track) => track.artistId === id);
   }
+
+  getTrackByAlbum(id: string) {
+    return dataBase.tracks.find((track) => track.albumId === id);
+  }
 }

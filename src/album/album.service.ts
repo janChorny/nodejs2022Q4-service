@@ -27,14 +27,14 @@ export class AlbumService {
     return album;
   }
 
-  updateAlbum(id: string, updateArtistDTO: UpdateAlbumDTO) {
+  updateAlbum(id: string, updateAlbumDTO: UpdateAlbumDTO) {
     const albumToUpdateIndex = dataBase.albums.findIndex(
       (album) => album.id === id,
     );
     const albumToUpdate = dataBase.albums[albumToUpdateIndex];
     dataBase.albums[albumToUpdateIndex] = {
       ...albumToUpdate,
-      ...updateArtistDTO,
+      ...updateAlbumDTO,
     };
     return dataBase.albums[albumToUpdateIndex];
   }

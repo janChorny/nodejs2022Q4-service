@@ -56,7 +56,7 @@ export class TrackController {
       typeof name !== 'string' ||
       typeof duration !== 'number' ||
       (validate(artistId) && version(artistId) === 4) ||
-      (validate(albumId) && version(albumId))
+      (validate(albumId) && version(albumId) === 4)
     ) {
       throw new HttpException(
         `Not all the provided fields are valid`,
