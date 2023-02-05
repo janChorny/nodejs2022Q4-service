@@ -51,6 +51,13 @@ export class UserController {
     @Body() updateUserPasswordDTO: UpdatePasswordDTO,
   ) {
     const { oldPassword, newPassword } = updateUserPasswordDTO;
+    if (!oldPassword && !newPassword) {
+      throw new HttpException(
+        `Not all the required fields are provided`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const user = this.userService.getUser(id);
     if (!user) {
       throw new HttpException(
@@ -63,13 +70,6 @@ export class UserController {
       throw new HttpException(
         `Old user's password is wrong`,
         HttpStatus.FORBIDDEN,
-      );
-    }
-
-    if (!oldPassword && !newPassword) {
-      throw new HttpException(
-        `Not all the required fields are provided`,
-        HttpStatus.BAD_REQUEST,
       );
     }
 

@@ -40,13 +40,13 @@ export class TrackController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createUser(@Body() createTrackDTO: CreateTrackDTO) {
+  createTrack(@Body() createTrackDTO: CreateTrackDTO) {
     return this.trackService.createTrack(createTrackDTO);
   }
 
   @HttpCode(HttpStatus.OK)
   @Put(':id')
-  updateUserPassword(
+  updateTrack(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateTrackDTO: UpdateTrackDTO,
   ) {
