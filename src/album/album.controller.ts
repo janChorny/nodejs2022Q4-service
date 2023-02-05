@@ -12,7 +12,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { TrackService } from 'src/track/track.service';
-import { validate, version } from 'uuid';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
 import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
