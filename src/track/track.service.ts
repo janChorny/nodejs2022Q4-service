@@ -42,4 +42,8 @@ export class TrackService {
     dataBase.tracks = dataBase.tracks.filter((track) => track.id !== id);
     return;
   }
+
+  getTrackByArtist(id: string) {
+    return dataBase.tracks.find((track) => track.artistId === id);
+  }
 }
