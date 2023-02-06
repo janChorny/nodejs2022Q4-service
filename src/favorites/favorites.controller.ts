@@ -54,6 +54,7 @@ export class FavoritesController {
       );
     }
     this.favoriteService.addTrackIdToFavorites(id);
+    return track;
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -68,8 +69,7 @@ export class FavoritesController {
         HttpStatus.NOT_FOUND,
       );
     }
-    dataBase.favorites.tracks.filter((tracksID) => tracksID !== id);
-    // this.favoriteService.deleteTrackIdFromFavorites(id);
+    return this.favoriteService.deleteTrackIdFromFavorites(id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -83,6 +83,7 @@ export class FavoritesController {
       );
     }
     this.favoriteService.addAlbumsIdFavorites(id);
+    return album;
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -97,7 +98,7 @@ export class FavoritesController {
         HttpStatus.NOT_FOUND,
       );
     }
-    this.favoriteService.deleteAlbumsIdFromFavorites(id);
+    return this.favoriteService.deleteAlbumsIdFromFavorites(id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -111,6 +112,7 @@ export class FavoritesController {
       );
     }
     this.favoriteService.addArtistIdToFavorites(id);
+    return artist;
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -125,7 +127,6 @@ export class FavoritesController {
         HttpStatus.NOT_FOUND,
       );
     }
-    dataBase.favorites.artists.filter((artistID) => artistID !== id);
-    // this.favoriteService.deleteArtistIdFromFavorites(id);
+    return this.favoriteService.deleteArtistIdFromFavorites(id);
   }
 }

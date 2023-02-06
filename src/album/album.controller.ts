@@ -11,6 +11,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { dataBase } from 'src/constants/constants';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
@@ -91,6 +92,9 @@ export class AlbumController {
         HttpStatus.NOT_FOUND,
       );
     }
+    dataBase.favorites.albums = dataBase.favorites.albums.filter(
+      (albumID) => albumID !== id,
+    );
     return this.albumService.deleteAlbum(id);
   }
 }

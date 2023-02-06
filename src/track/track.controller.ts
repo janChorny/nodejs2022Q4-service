@@ -11,6 +11,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { dataBase } from 'src/constants/constants';
 import { validate, version } from 'uuid';
 import { CreateTrackDTO } from './dto/trackCreate.dto';
 import { UpdateTrackDTO } from './dto/trackUpdate.dto';
@@ -84,6 +85,9 @@ export class TrackController {
         HttpStatus.NOT_FOUND,
       );
     }
+    dataBase.favorites.tracks = dataBase.favorites.tracks.filter(
+      (trackID) => trackID !== id,
+    );
     return this.trackService.deleteTrack(id);
   }
 }

@@ -11,6 +11,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { dataBase } from 'src/constants/constants';
 import { TrackService } from 'src/track/track.service';
 import { ArtistService } from './artist.service';
 import { CreateArtistDTO } from './dto/artistCreate.dto';
@@ -91,6 +92,9 @@ export class ArtistController {
         HttpStatus.NOT_FOUND,
       );
     }
+    dataBase.favorites.artists = dataBase.favorites.artists.filter(
+      (artistID) => artistID !== id,
+    );
     return this.artistService.deleteArtist(id);
   }
 }
