@@ -97,8 +97,7 @@ export class FavoritesController {
         HttpStatus.NOT_FOUND,
       );
     }
-    dataBase.favorites.albums.filter((albumsID) => albumsID !== id);
-    // this.favoriteService.deleteAlbumsIdFromFavorites(id);
+    this.favoriteService.deleteAlbumsIdFromFavorites(id);
   }
 
   @HttpCode(HttpStatus.CREATED)

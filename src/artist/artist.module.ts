@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
-import { TrackService } from 'src/track/track.service';
+import { forwardRef, Module } from '@nestjs/common';
+import { TrackModule } from 'src/track/track.module';
 import { ArtistController } from './artist.controller';
 import { ArtistService } from './artist.service';
 
 @Module({
-  imports: [],
+  imports: [forwardRef(() => TrackModule)],
   controllers: [ArtistController],
-  providers: [ArtistService, TrackService],
+  providers: [ArtistService],
+  exports: [ArtistService],
 })
 export class ArtistModule {}
