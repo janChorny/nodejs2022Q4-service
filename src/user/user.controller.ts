@@ -11,6 +11,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/userCreate.dto';
 import { UpdatePasswordDTO } from './dto/userUpdate.dto';
 import { UserService } from './user.service';
@@ -38,6 +39,8 @@ export class UserController {
     return user;
   }
 
+  @ApiOperation({ summary: 'Create User' })
+  @ApiResponse({ status: 200, type: CreateUserDTO })
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createUser(@Body() createUserDTO: CreateUserDTO) {
