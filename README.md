@@ -5,10 +5,17 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
+
 ## Downloading
 
 ```
 git clone {repository URL}
+```
+
+## Changing directory
+
+```
+cd nodejs2022Q4-service
 ```
 
 ## Installing NPM modules
@@ -70,3 +77,43 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+## Docker
+
+! Tested on docker 4.13.1 release
+
+Compose
+
+```
+docker-compose build
+```
+
+Run
+
+```
+docker-compose up
+```
+
+Stop
+
+```
+docker-compose down
+```
+
+Check image size
+
+```
+docker container ls -s
+```
+
+Add images to Docker Hub
+
+```
+docker container commit <container id> <repo-name>
+```
+```
+docker image tag <repo-name> <repo-name>:<tag-name>
+```
+```
+docker push <repo-name>:<tag-name>
+```
