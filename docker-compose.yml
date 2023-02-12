@@ -1,0 +1,41 @@
+version: '3.0'
+services:
+  app:
+    container_name: app
+    build: .
+    image: janchorny/rest-service
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./src:/usr/app/src
+    environment:
+      - POSTGRES_HOST=database
+    depends_on:
+      - database
+    restart: always
+    networks:
+      - app-network
+    command: ["npm", "run", "start:dev"]
+
+  database:
+    container_name: database
+    build: ./database
+    image: janchorny/rest-service-db
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    restart: always
+    networks:
+      - app-network
+
+volumes:
+  db_volume:
+
+networks:
+  app-network:
+    driver: bridge
