@@ -117,3 +117,5 @@ docker image tag <repo-name> <repo-name>:<tag-name>
 ```
 docker push <repo-name>:<tag-name>
 ```
+Repository with docker images is available on Docker Hub by the link 
+https://hub.docker.com/repository/docker/janchorny/nodejs2022q4/general
