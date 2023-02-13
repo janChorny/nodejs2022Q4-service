@@ -6,7 +6,9 @@ import { ArtistModule } from './artist/artist.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { TrackModule } from './track/track.module';
 import { UserModule } from './user/user.module';
-
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import configService from './ormconfig';
 @Module({
   imports: [
     UserModule,
@@ -14,6 +16,8 @@ import { UserModule } from './user/user.module';
     ArtistModule,
     AlbumModule,
     FavoritesModule,
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '../.env' }),
+    TypeOrmModule.forRoot(configService),
   ],
   controllers: [AppController],
   providers: [AppService],
