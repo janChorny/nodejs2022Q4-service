@@ -7,10 +7,10 @@ export class CreateUserDTO {
   @ApiProperty({ example: 'Jerry', description: 'string value' })
   @IsNotEmpty({ message: 'The user login can not be empty' })
   @IsString({ message: 'The user login should string' })
-  login: string;
+  login!: string;
 
   @ApiProperty({ example: 'qwerty', description: 'string value' })
   @IsNotEmpty({ message: 'The user password can not be empty' })
   @IsString({ message: 'The user password should string' })
-  password: string;
+  password?: string;
 }
