@@ -1,45 +1,57 @@
-import { Injectable } from '@nestjs/common';
-import { dataBase } from 'src/constants/constants';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { CreateArtistDTO } from './dto/artistCreate.dto';
 import { UpdateArtistDTO } from './dto/artistUpdate.dto';
+import { ArtistEntity } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistService {
-  getAllArtists() {
-    return dataBase.artists;
+  constructor(
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>,
+  ) {}
+
+  async getAllArtists() {
+    const artists = await this.artistRepository.find();
+    return artists;
   }
 
-  getArtist(id: string) {
-    const artist = dataBase.artists.find((artist) => artist.id === id);
-    return artist;
+  async getArtist(artistId: string) {
+    const artist = await this.artistRepository.findOneBy({ id: artistId });
+    if (artist) return artist;
+    throw new NotFoundException(`Artist with id = ${artistId} was not found`);
   }
 
-  createArtist({ name, grammy }: CreateArtistDTO) {
+  async createArtist({ name, grammy }: CreateArtistDTO) {
     const artist = {
       id: v4(),
       name,
       grammy,
     };
 
-    dataBase.artists.push(artist);
-    return artist;
+    const createdArtist = this.artistRepository.create(artist);
+
+    return await this.artistRepository.save(createdArtist);
   }
 
-  updateArtist(id: string, updateArtistDTO: UpdateArtistDTO) {
-    const artistToUpdateIndex = dataBase.artists.findIndex(
-      (artist) => artist.id === id,
-    );
-    const artistToUpdate = dataBase.artists[artistToUpdateIndex];
-    dataBase.artists[artistToUpdateIndex] = {
-      ...artistToUpdate,
-      ...updateArtistDTO,
-    };
-    return dataBase.artists[artistToUpdateIndex];
+  async updateArtist(artistId: string, updateArtistDTO: UpdateArtistDTO) {
+    const artist = await this.artistRepository.findOneBy({ id: artistId });
+    if (!artist) {
+      throw new NotFoundException(`Artist with id = ${artistId} was not found`);
+    }
+
+    await this.artistRepository.update(artistId, { ...updateArtistDTO });
+
+    return await this.artistRepository.findOneBy({ id: artistId });
   }
 
-  deleteArtist(id: string) {
-    dataBase.artists = dataBase.artists.filter((artist) => artist.id !== id);
-    return;
+  async deleteArtist(id: string) {
+    const artist = await this.artistRepository.findOneBy({ id });
+    if (!artist) {
+      throw new NotFoundException(`Artist with id = ${id} was not found`);
+    }
+    await this.artistRepository.delete({ id });
   }
 }
