@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDTO } from './dto/userCreate.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
-import {
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common/exceptions';
+import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
+import { v4 } from 'uuid';
+import { UpdatePasswordDTO } from './dto/userUpdate.dto';
 
 @Injectable()
 export class UserService {
@@ -16,50 +15,62 @@ export class UserService {
   ) {}
 
   async create(userDTO: CreateUserDTO) {
-    const createdUser = this.userRepository.create(userDTO);
-    return (await this.userRepository.save(createdUser)).toResponse();
+    const createdUser = this.userRepository.create({ ...userDTO, id: v4() });
+    await this.userRepository.save(createdUser);
+    const result = { ...createdUser };
+    delete result.password;
+    return result;
   }
 
   async findAll() {
     const users = await this.userRepository.find();
-    return users.map((user) => user.toResponse());
+    return users;
   }
 
   async findOne(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
-    if (user) return user.toResponse();
+    if (user) return user;
     throw new NotFoundException(`User with id = ${userId} was not found`);
   }
 
-  async update(userId: string, userDto: CreateUserDTO) {
-    if (userDto.id) delete userDto.id;
-    const updatedUser = await this.userRepository.findOne({
+  async update(userId: string, userPasswordDto: UpdatePasswordDTO) {
+    const { oldPassword, newPassword } = userPasswordDto;
+    if (!oldPassword && !newPassword) {
+      throw new HttpException(
+        `Not all the required fields are provided`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const userToUpdate = await this.userRepository.findOne({
       where: { id: userId },
     });
 
-    if (userDto.login !== updatedUser.login) {
-      await this.isLoginExists(userDto.login);
-    }
-
-    if (updatedUser) {
-      Object.assign(updatedUser, userDto);
-      return await this.userRepository.save(updatedUser);
-    }
-
-    throw new NotFoundException(`User with id = ${userId} was not found`);
-  }
-
-  async findByLogin(login: string) {
-    const user = await this.userRepository.findOne({ where: { login } });
-    if (user) return user;
-  }
-
-  async isLoginExists(login: string) {
-    const user = await this.findByLogin(login);
-    if (user)
-      throw new BadRequestException(
-        `User with login = $login{} already exists`,
+    if (!userToUpdate) {
+      throw new HttpException(
+        `User with id = ${userId} was not found`,
+        HttpStatus.NOT_FOUND,
       );
+    }
+
+    if (userToUpdate.password !== userPasswordDto.oldPassword) {
+      throw new HttpException(
+        `Previous password is wrong`,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    await this.userRepository.update(userId, {
+      password: userPasswordDto.newPassword,
+      version: userToUpdate.version + 1,
+      updatedAt: Math.floor(Date.now() / 1000),
+    });
+
+    const updatedUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    const result = { ...updatedUser };
+    delete result.password;
+    return result;
   }
 
   async delete(userId: string) {
@@ -69,50 +80,4 @@ export class UserService {
       throw new NotFoundException(`User with id = ${userId} was not found`);
     }
   }
-
-  // getAllUsers() {
-  //   return dataBase.users;
-  // }
-
-  // getUser(id: string) {
-  //   const user = dataBase.users.find((user) => user.id === id);
-  //   return user;
-  // }
-
-  // createUser(createUserDTO: CreateUserDTO) {
-  //   const user = {
-  //     id: v4(),
-  //     login: createUserDTO.login,
-  //     password: createUserDTO.password,
-  //     version: 1,
-  //     createdAt: Date.now(),
-  //     updatedAt: Date.now(),
-  //   };
-
-  //   dataBase.users.push(user);
-  //   const result = { ...user };
-  //   delete result.password;
-  //   return result;
-  // }
-
-  // updateUserPassword(id: string, updateUserPasswordDTO: UpdatePasswordDTO) {
-  //   const userToUpdateIndex = dataBase.users.findIndex(
-  //     (user) => user.id === id,
-  //   );
-  //   const userToUpdate = dataBase.users[userToUpdateIndex];
-  //   dataBase.users[userToUpdateIndex] = {
-  //     ...userToUpdate,
-  //     password: updateUserPasswordDTO['newPassword'],
-  //     version: userToUpdate.version + 1,
-  //     updatedAt: Date.now(),
-  //   };
-  //   const result = { ...dataBase.users[userToUpdateIndex] };
-  //   delete result.password;
-  //   return result;
-  // }
-
-  // deleteUser(id: string) {
-  //   dataBase.users = dataBase.users.filter((user) => user.id !== id);
-  //   return;
-  // }
 }

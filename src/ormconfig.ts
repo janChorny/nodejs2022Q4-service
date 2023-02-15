@@ -10,9 +10,9 @@ export default {
   username: process.env.POSTGRES_USER as string,
   password: process.env.POSTGRES_PASSWORD as string,
   database: process.env.POSTGRES_DATABASE as string,
-  synchronize: false,
+  synchronize: true,
   entities: ['dist/**/entities/*.entity.js'],
   migrations: ['dist/**/migration/*.js'],
-  migrationsRun: true,
+  logging: true,
   autoLoadEntities: true,
 } as DataSourceOptions;

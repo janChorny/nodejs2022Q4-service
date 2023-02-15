@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/userCreate.dto';
+import { UpdatePasswordDTO } from './dto/userUpdate.dto';
 import { UserScheme } from './schemes/user.scheme';
 import { UserService } from './user.service';
 
@@ -20,7 +21,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @ApiOperation({ summary: 'Get all users (remove password from response)' })
+  @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: HttpStatus.OK, type: [UserScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -28,7 +29,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get user by id (remove password from response)' })
+  @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: HttpStatus.OK, type: UserScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':userId')
@@ -36,7 +37,7 @@ export class UserController {
     return this.userService.findOne(userId);
   }
 
-  @ApiOperation({ summary: 'Create User (remove password from response)' })
+  @ApiOperation({ summary: 'Create User' })
   @ApiResponse({ status: HttpStatus.CREATED, type: UserScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
@@ -45,14 +46,14 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: 'Update user by id (remove password from response)',
+    summary: 'Update user by id',
   })
   @ApiResponse({ status: HttpStatus.OK, type: UserScheme })
   @HttpCode(HttpStatus.OK)
   @Put(':userId')
   updateUserPassword(
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Body() updateUserPasswordDTO: CreateUserDTO,
+    @Body() updateUserPasswordDTO: UpdatePasswordDTO,
   ) {
     return this.userService.update(userId, updateUserPasswordDTO);
   }
