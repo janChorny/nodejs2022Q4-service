@@ -11,12 +11,15 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { dataBase } from 'src/constants/constants';
 import { TrackService } from 'src/track/track.service';
+import { ArtistScheme } from 'src/user/schemes/artist.scheme';
 import { ArtistService } from './artist.service';
 import { CreateArtistDTO } from './dto/artistCreate.dto';
 import { UpdateArtistDTO } from './dto/artistUpdate.dto';
 
+@ApiTags('Artist')
 @Controller('artist')
 export class ArtistController {
   constructor(
@@ -24,12 +27,16 @@ export class ArtistController {
     private trackService: TrackService,
   ) {}
 
+  @ApiOperation({ summary: 'Get all artists' })
+  @ApiResponse({ status: HttpStatus.OK, type: [ArtistScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllArtists() {
     return this.artistService.getAllArtists();
   }
 
+  @ApiOperation({ summary: 'Get artist by id' })
+  @ApiResponse({ status: HttpStatus.OK, type: ArtistScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getArtist(@Param('id', new ParseUUIDPipe()) id: string) {
@@ -43,12 +50,18 @@ export class ArtistController {
     return artist;
   }
 
+  @ApiOperation({ summary: 'Create Artist' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: ArtistScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createArtist(@Body() createArtistDTO: CreateArtistDTO) {
     return this.artistService.createArtist(createArtistDTO);
   }
 
+  @ApiOperation({
+    summary: 'Update artist by id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: ArtistScheme })
   @HttpCode(HttpStatus.OK)
   @Put(':id')
   updateArtist(
@@ -73,6 +86,10 @@ export class ArtistController {
     return this.artistService.updateArtist(id, updateArtistDTO);
   }
 
+  @ApiOperation({
+    summary: 'Delete artist by id',
+  })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
