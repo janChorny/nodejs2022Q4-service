@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -12,7 +11,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { dataBase } from 'src/constants/constants';
 import { TrackService } from 'src/track/track.service';
 import { ArtistScheme } from 'src/user/schemes/artist.scheme';
 import { ArtistService } from './artist.service';
@@ -38,16 +36,9 @@ export class ArtistController {
   @ApiOperation({ summary: 'Get artist by id' })
   @ApiResponse({ status: HttpStatus.OK, type: ArtistScheme })
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  getArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    const artist = this.artistService.getArtist(id);
-    if (!artist) {
-      throw new HttpException(
-        `Artist with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return artist;
+  @Get(':artistId')
+  getArtist(@Param('artistId', new ParseUUIDPipe()) artistId: string) {
+    return this.artistService.getArtist(artistId);
   }
 
   @ApiOperation({ summary: 'Create Artist' })
@@ -63,27 +54,12 @@ export class ArtistController {
   })
   @ApiResponse({ status: HttpStatus.OK, type: ArtistScheme })
   @HttpCode(HttpStatus.OK)
-  @Put(':id')
+  @Put(':artistId')
   updateArtist(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('artistId', new ParseUUIDPipe()) artistId: string,
     @Body() updateArtistDTO: UpdateArtistDTO,
   ) {
-    const { name, grammy } = updateArtistDTO;
-    if (typeof name !== 'string' || typeof grammy !== 'boolean') {
-      throw new HttpException(
-        `Not all the provided fields are valid`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const artist = this.artistService.getArtist(id);
-    if (!artist) {
-      throw new HttpException(
-        `Artist with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return this.artistService.updateArtist(id, updateArtistDTO);
+    return this.artistService.updateArtist(artistId, updateArtistDTO);
   }
 
   @ApiOperation({
@@ -93,25 +69,18 @@ export class ArtistController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrackByArtist(id);
-    if (track) {
-      this.trackService.updateTrack(track.id, {
-        artistId: null,
-        name: track.name,
-        albumId: track.albumId,
-        duration: track.duration,
-      });
-    }
-    const artist = this.artistService.getArtist(id);
-    if (!artist) {
-      throw new HttpException(
-        `Artist with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    dataBase.favorites.artists = dataBase.favorites.artists.filter(
-      (artistID) => artistID !== id,
-    );
+    // const track = this.trackService.getTrackByArtist(id);
+    // if (track) {
+    //   this.trackService.updateTrack(track.id, {
+    //     artistId: null,
+    //     name: track.name,
+    //     albumId: track.albumId,
+    //     duration: track.duration,
+    //   });
+    // }
+    // dataBase.favorites.artists = dataBase.favorites.artists.filter(
+    //   (artistID) => artistID !== id,
+    // );
     return this.artistService.deleteArtist(id);
   }
 }

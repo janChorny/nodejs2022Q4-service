@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
@@ -37,6 +42,13 @@ export class ArtistService {
   }
 
   async updateArtist(artistId: string, updateArtistDTO: UpdateArtistDTO) {
+    const { name, grammy } = updateArtistDTO;
+    if (typeof name !== 'string' || typeof grammy !== 'boolean') {
+      throw new HttpException(
+        `Not all the provided fields are valid`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const artist = await this.artistRepository.findOneBy({ id: artistId });
     if (!artist) {
       throw new NotFoundException(`Artist with id = ${artistId} was not found`);
