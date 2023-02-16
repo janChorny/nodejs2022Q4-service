@@ -1,19 +1,29 @@
-import { dataBase } from 'src/constants/constants';
-import { v4 } from 'uuid';
+import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { v4, validate, version } from 'uuid';
 import { CreateTrackDTO } from './dto/trackCreate.dto';
 import { UpdateTrackDTO } from './dto/trackUpdate.dto';
+import { TrackEntity } from './entities/track.entity';
 
 export class TrackService {
-  getAllTracks() {
-    return dataBase.tracks;
+  constructor(
+    @InjectRepository(TrackEntity)
+    private trackRepository: Repository<TrackEntity>,
+  ) {}
+
+  async getAllTracks() {
+    const tracks = await this.trackRepository.find();
+    return tracks;
   }
 
-  getTrack(id: string) {
-    const track = dataBase.tracks.find((track) => track.id === id);
-    return track;
+  async getTrack(trackId: string) {
+    const track = await this.trackRepository.findOneBy({ id: trackId });
+    if (track) return track;
+    throw new NotFoundException(`Track with id = ${trackId} was not found`);
   }
 
-  createTrack({ name, duration, artistId, albumId }: CreateTrackDTO) {
+  async createTrack({ name, duration, artistId, albumId }: CreateTrackDTO) {
     const track = {
       id: v4(),
       name,
@@ -22,32 +32,47 @@ export class TrackService {
       albumId,
     };
 
-    dataBase.tracks.push(track);
-    return track;
+    const createdTrack = this.trackRepository.create(track);
+
+    return await this.trackRepository.save(createdTrack);
   }
 
-  updateTrack(id: string, updateTrackDTO: UpdateTrackDTO) {
-    const trackToUpdateIndex = dataBase.tracks.findIndex(
-      (track) => track.id === id,
-    );
-    const trackToUpdate = dataBase.tracks[trackToUpdateIndex];
-    dataBase.tracks[trackToUpdateIndex] = {
-      ...trackToUpdate,
-      ...updateTrackDTO,
-    };
-    return dataBase.tracks[trackToUpdateIndex];
+  async updateTrack(trackId: string, updateTrackDTO: UpdateTrackDTO) {
+    const { name, artistId, albumId, duration } = updateTrackDTO;
+    if (
+      typeof name !== 'string' ||
+      typeof duration !== 'number' ||
+      (validate(artistId) && version(artistId) === 4) ||
+      (validate(albumId) && version(albumId) === 4)
+    ) {
+      throw new HttpException(
+        `Not all the provided fields are valid`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const track = await this.trackRepository.findOneBy({ id: trackId });
+    if (!track) {
+      throw new NotFoundException(`Track with id = ${trackId} was not found`);
+    }
+
+    await this.trackRepository.update(artistId, { ...updateTrackDTO });
+
+    return await this.trackRepository.findOneBy({ id: artistId });
   }
 
-  deleteTrack(id: string) {
-    dataBase.tracks = dataBase.tracks.filter((track) => track.id !== id);
-    return;
+  async deleteTrack(id: string) {
+    const track = await this.trackRepository.findOneBy({ id });
+    if (!track) {
+      throw new NotFoundException(`Artist with id = ${id} was not found`);
+    }
+    await this.trackRepository.delete({ id });
   }
 
-  getTrackByArtist(id: string) {
-    return dataBase.tracks.find((track) => track.artistId === id);
-  }
+  // getTrackByArtist(id: string) {
+  //   return dataBase.tracks.find((track) => track.artistId === id);
+  // }
 
-  getTrackByAlbum(id: string) {
-    return dataBase.tracks.find((track) => track.albumId === id);
-  }
+  // getTrackByAlbum(id: string) {
+  //   return dataBase.tracks.find((track) => track.albumId === id);
+  // }
 }

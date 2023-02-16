@@ -4,90 +4,77 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
-import { dataBase } from 'src/constants/constants';
-import { validate, version } from 'uuid';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TrackScheme } from 'src/user/schemes/track.scheme';
 import { CreateTrackDTO } from './dto/trackCreate.dto';
 import { UpdateTrackDTO } from './dto/trackUpdate.dto';
 import { TrackService } from './track.service';
 
+@ApiTags('Tracks')
 @Controller('track')
 export class TrackController {
   constructor(private trackService: TrackService) {}
 
+  @ApiOperation({ summary: 'Get all tracks' })
+  @ApiResponse({ status: HttpStatus.OK, type: [TrackScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllTracks() {
     return this.trackService.getAllTracks();
   }
 
+  @ApiOperation({ summary: 'Get track by id' })
+  @ApiResponse({ status: HttpStatus.OK, type: TrackScheme })
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  getTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrack(id);
-    if (!track) {
-      throw new HttpException(
-        `Track with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return track;
+  @Get(':trackId')
+  getTrack(@Param('trackId', new ParseUUIDPipe()) trackId: string) {
+    return this.trackService.getTrack(trackId);
   }
 
+  @ApiOperation({ summary: 'Create Artist' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: TrackScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createTrack(@Body() createTrackDTO: CreateTrackDTO) {
     return this.trackService.createTrack(createTrackDTO);
   }
 
+  @ApiOperation({
+    summary: 'Update track by id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: TrackScheme })
   @HttpCode(HttpStatus.OK)
-  @Put(':id')
+  @Put(':trackId')
   updateTrack(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('trackId', new ParseUUIDPipe()) trackId: string,
     @Body() updateTrackDTO: UpdateTrackDTO,
   ) {
-    const { name, artistId, albumId, duration } = updateTrackDTO;
-    if (
-      typeof name !== 'string' ||
-      typeof duration !== 'number' ||
-      (validate(artistId) && version(artistId) === 4) ||
-      (validate(albumId) && version(albumId) === 4)
-    ) {
-      throw new HttpException(
-        `Not all the provided fields are valid`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const track = this.trackService.getTrack(id);
-    if (!track) {
-      throw new HttpException(
-        `Track with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return this.trackService.updateTrack(id, updateTrackDTO);
+    return this.trackService.updateTrack(trackId, updateTrackDTO);
   }
 
+  @ApiOperation({
+    summary: 'Delete track by id',
+  })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrack(id);
-    if (!track) {
-      throw new HttpException(
-        `Track with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    dataBase.favorites.tracks = dataBase.favorites.tracks.filter(
-      (trackID) => trackID !== id,
-    );
+    // const track = this.trackService.getTrack(id);
+    // if (!track) {
+    //   throw new HttpException(
+    //     `Track with such id is not found`,
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
+    // dataBase.favorites.tracks = dataBase.favorites.tracks.filter(
+    //   (trackID) => trackID !== id,
+    // );
     return this.trackService.deleteTrack(id);
   }
 }
