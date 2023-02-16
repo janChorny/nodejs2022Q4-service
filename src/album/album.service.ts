@@ -1,21 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { dataBase } from 'src/constants/constants';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
 import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
+import { AlbumEntity } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  getAllAlbums() {
-    return dataBase.albums;
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private albumRepository: Repository<AlbumEntity>,
+  ) {}
+
+  async getAllAlbums() {
+    const albums = await this.albumRepository.find();
+    return albums;
   }
 
-  getAlbum(id: string) {
-    const album = dataBase.albums.find((album) => album.id === id);
-    return album;
+  async getAlbum(albumId: string) {
+    const album = await this.albumRepository.findOneBy({ id: albumId });
+    if (album) return album;
+    throw new NotFoundException(`Album with id = ${albumId} was not found`);
   }
 
-  createAlbum({ name, year, artistId }: CreateAlbumDTO) {
+  async createAlbum({ name, year, artistId }: CreateAlbumDTO) {
     const album = {
       id: v4(),
       name,
@@ -23,24 +37,34 @@ export class AlbumService {
       artistId,
     };
 
-    dataBase.albums.push(album);
-    return album;
+    const createdAlbum = this.albumRepository.create(album);
+
+    return await this.albumRepository.save(createdAlbum);
   }
 
-  updateAlbum(id: string, updateAlbumDTO: UpdateAlbumDTO) {
-    const albumToUpdateIndex = dataBase.albums.findIndex(
-      (album) => album.id === id,
-    );
-    const albumToUpdate = dataBase.albums[albumToUpdateIndex];
-    dataBase.albums[albumToUpdateIndex] = {
-      ...albumToUpdate,
-      ...updateAlbumDTO,
-    };
-    return dataBase.albums[albumToUpdateIndex];
+  async updateAlbum(albumId: string, updateAlbumDTO: UpdateAlbumDTO) {
+    const { name, year } = updateAlbumDTO;
+    if (typeof name !== 'string' || typeof year !== 'number') {
+      throw new HttpException(
+        `Not all the provided fields are valid`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const artist = await this.albumRepository.findOneBy({ id: albumId });
+    if (!artist) {
+      throw new NotFoundException(`Album with id = ${albumId} was not found`);
+    }
+
+    await this.albumRepository.update(albumId, { ...updateAlbumDTO });
+
+    return await this.albumRepository.findOneBy({ id: albumId });
   }
 
-  deleteAlbum(id: string) {
-    dataBase.albums = dataBase.albums.filter((album) => album.id !== id);
-    return;
+  async deleteAlbum(id: string) {
+    const album = await this.albumRepository.findOneBy({ id });
+    if (!album) {
+      throw new NotFoundException(`Album with id = ${id} was not found`);
+    }
+    await this.albumRepository.delete({ id });
   }
 }

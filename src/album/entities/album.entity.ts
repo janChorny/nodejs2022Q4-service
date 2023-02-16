@@ -1,8 +1,8 @@
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('track')
-export class TrackEntity {
+@Entity('album')
+export class AlbumEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -10,9 +10,10 @@ export class TrackEntity {
   name: string;
 
   @Column({ nullable: false })
-  duration: number;
+  year: number;
 
   @IsOptional()
+  @IsString()
   @Column({ nullable: true })
   artistId: string;
 }
