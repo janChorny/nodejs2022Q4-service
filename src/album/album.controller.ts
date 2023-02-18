@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -12,20 +11,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { dataBase } from 'src/constants/constants';
-import { TrackService } from 'src/track/track.service';
 import { AlbumScheme } from 'src/user/schemes/album.scheme';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
 import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
 
-@ApiTags('ALbum')
+@ApiTags('Albums')
 @Controller('album')
 export class AlbumController {
-  constructor(
-    private albumService: AlbumService,
-    private trackService: TrackService,
-  ) {}
+  constructor(private albumService: AlbumService) {}
 
   @ApiOperation({ summary: 'Get all albums' })
   @ApiResponse({ status: HttpStatus.OK, type: [AlbumScheme] })

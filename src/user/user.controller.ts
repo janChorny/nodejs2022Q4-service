@@ -16,7 +16,7 @@ import { UpdatePasswordDTO } from './dto/userUpdate.dto';
 import { UserScheme } from './schemes/user.scheme';
 import { UserService } from './user.service';
 
-@ApiTags('User')
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}

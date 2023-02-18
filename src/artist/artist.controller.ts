@@ -11,19 +11,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TrackService } from 'src/track/track.service';
 import { ArtistScheme } from 'src/user/schemes/artist.scheme';
 import { ArtistService } from './artist.service';
 import { CreateArtistDTO } from './dto/artistCreate.dto';
 import { UpdateArtistDTO } from './dto/artistUpdate.dto';
 
-@ApiTags('Artist')
+@ApiTags('Artists')
 @Controller('artist')
 export class ArtistController {
-  constructor(
-    private artistService: ArtistService,
-    private trackService: TrackService,
-  ) {}
+  constructor(private artistService: ArtistService) {}
 
   @ApiOperation({ summary: 'Get all artists' })
   @ApiResponse({ status: HttpStatus.OK, type: [ArtistScheme] })
