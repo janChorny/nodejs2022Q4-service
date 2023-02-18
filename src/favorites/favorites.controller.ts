@@ -9,13 +9,13 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { FavoriteScheme } from 'src/user/schemes/favorite.scheme';
+import { FavoriteScheme } from 'src/utils/schemes/favorite.scheme';
 import { FavoriteService } from './favorites.service';
 
 @ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
-  constructor(private favoriteService: FavoriteService) {}
+  constructor(private favoriteService: FavoriteService) { }
 
   @ApiOperation({ summary: 'Get all favorites' })
   @ApiResponse({ status: HttpStatus.OK, type: [FavoriteScheme] })

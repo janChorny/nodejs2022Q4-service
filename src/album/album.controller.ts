@@ -11,7 +11,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AlbumScheme } from 'src/user/schemes/album.scheme';
+import { AlbumScheme } from 'src/utils/schemes/album.scheme';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
 import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
@@ -33,7 +33,7 @@ export class AlbumController {
   @ApiResponse({ status: HttpStatus.OK, type: AlbumScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':albumId')
-  getAlbum(@Param('id', new ParseUUIDPipe()) albumId: string) {
+  getAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string) {
     return this.albumService.getAlbum(albumId);
   }
 
@@ -65,18 +65,6 @@ export class AlbumController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    // const track = this.trackService.getTrackByAlbum(id);
-    // if (track) {
-    //   this.trackService.updateTrack(track.id, {
-    //     artistId: track.artistId,
-    //     name: track.name,
-    //     albumId: null,
-    //     duration: track.duration,
-    //   });
-    // }
-    // dataBase.favorites.albums = dataBase.favorites.albums.filter(
-    //   (albumID) => albumID !== id,
-    // );
     return this.albumService.deleteAlbum(id);
   }
 }

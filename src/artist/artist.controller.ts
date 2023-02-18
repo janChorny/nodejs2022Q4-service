@@ -11,7 +11,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ArtistScheme } from 'src/user/schemes/artist.scheme';
+import { ArtistScheme } from 'src/utils/schemes/artist.scheme';
 import { ArtistService } from './artist.service';
 import { CreateArtistDTO } from './dto/artistCreate.dto';
 import { UpdateArtistDTO } from './dto/artistUpdate.dto';
@@ -19,7 +19,7 @@ import { UpdateArtistDTO } from './dto/artistUpdate.dto';
 @ApiTags('Artists')
 @Controller('artist')
 export class ArtistController {
-  constructor(private artistService: ArtistService) {}
+  constructor(private artistService: ArtistService) { }
 
   @ApiOperation({ summary: 'Get all artists' })
   @ApiResponse({ status: HttpStatus.OK, type: [ArtistScheme] })
@@ -65,18 +65,6 @@ export class ArtistController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    // const track = this.trackService.getTrackByArtist(id);
-    // if (track) {
-    //   this.trackService.updateTrack(track.id, {
-    //     artistId: null,
-    //     name: track.name,
-    //     albumId: track.albumId,
-    //     duration: track.duration,
-    //   });
-    // }
-    // dataBase.favorites.artists = dataBase.favorites.artists.filter(
-    //   (artistID) => artistID !== id,
-    // );
     return this.artistService.deleteArtist(id);
   }
 }

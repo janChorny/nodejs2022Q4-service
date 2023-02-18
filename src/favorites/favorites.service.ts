@@ -93,7 +93,7 @@ export class FavoriteService {
     if (trackInd === -1) {
       throw new NotFoundException(`Track with id = ${trackId} was not found`);
     }
-    favorites.tracks.filter((track) => track.id !== trackId);
+    favorites.tracks = favorites.tracks.filter((track) => track.id !== trackId);
     await this.favoritesRepository.save(favorites);
   }
 
@@ -105,7 +105,9 @@ export class FavoriteService {
     if (artistInd === -1) {
       throw new NotFoundException(`Artist with id = ${artistId} was not found`);
     }
-    favorites.artists.filter((artist) => artist.id !== artistId);
+    favorites.artists = favorites.artists.filter(
+      (artist) => artist.id !== artistId,
+    );
     await this.favoritesRepository.save(favorites);
   }
 
@@ -117,7 +119,7 @@ export class FavoriteService {
     if (albumInd === -1) {
       throw new NotFoundException(`Album with id = ${albumId} was not found`);
     }
-    favorites.albums.filter((album) => album.id !== albumId);
+    favorites.albums = favorites.albums.filter((album) => album.id !== albumId);
     await this.favoritesRepository.save(favorites);
   }
 }

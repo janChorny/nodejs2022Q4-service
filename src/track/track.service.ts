@@ -33,7 +33,6 @@ export class TrackService {
     };
 
     const createdTrack = this.trackRepository.create(track);
-
     return await this.trackRepository.save(createdTrack);
   }
 
@@ -55,9 +54,8 @@ export class TrackService {
       throw new NotFoundException(`Track with id = ${trackId} was not found`);
     }
 
-    await this.trackRepository.update(artistId, { ...updateTrackDTO });
-
-    return await this.trackRepository.findOneBy({ id: artistId });
+    await this.trackRepository.update(trackId, { ...updateTrackDTO });
+    return await this.trackRepository.findOneBy({ id: trackId });
   }
 
   async deleteTrack(id: string) {
@@ -67,12 +65,4 @@ export class TrackService {
     }
     await this.trackRepository.delete({ id });
   }
-
-  // getTrackByArtist(id: string) {
-  //   return dataBase.tracks.find((track) => track.artistId === id);
-  // }
-
-  // getTrackByAlbum(id: string) {
-  //   return dataBase.tracks.find((track) => track.albumId === id);
-  // }
 }

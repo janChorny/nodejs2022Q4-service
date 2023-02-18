@@ -13,13 +13,13 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/userCreate.dto';
 import { UpdatePasswordDTO } from './dto/userUpdate.dto';
-import { UserScheme } from './schemes/user.scheme';
+import { UserScheme } from '../utils/schemes/user.scheme';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: HttpStatus.OK, type: [UserScheme] })

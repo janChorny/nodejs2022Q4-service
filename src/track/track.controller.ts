@@ -11,7 +11,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TrackScheme } from 'src/user/schemes/track.scheme';
+import { TrackScheme } from 'src/utils/schemes/track.scheme';
 import { CreateTrackDTO } from './dto/trackCreate.dto';
 import { UpdateTrackDTO } from './dto/trackUpdate.dto';
 import { TrackService } from './track.service';
@@ -19,7 +19,7 @@ import { TrackService } from './track.service';
 @ApiTags('Tracks')
 @Controller('track')
 export class TrackController {
-  constructor(private trackService: TrackService) {}
+  constructor(private trackService: TrackService) { }
 
   @ApiOperation({ summary: 'Get all tracks' })
   @ApiResponse({ status: HttpStatus.OK, type: [TrackScheme] })
@@ -65,16 +65,6 @@ export class TrackController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    // const track = this.trackService.getTrack(id);
-    // if (!track) {
-    //   throw new HttpException(
-    //     `Track with such id is not found`,
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
-    // dataBase.favorites.tracks = dataBase.favorites.tracks.filter(
-    //   (trackID) => trackID !== id,
-    // );
     return this.trackService.deleteTrack(id);
   }
 }
