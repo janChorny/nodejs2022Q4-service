@@ -61,7 +61,7 @@ export class TrackService {
   async deleteTrack(id: string) {
     const track = await this.trackRepository.findOneBy({ id });
     if (!track) {
-      throw new NotFoundException(`Artist with id = ${id} was not found`);
+      throw new NotFoundException(`Track with id = ${id} was not found`);
     }
     await this.trackRepository.delete({ id });
   }

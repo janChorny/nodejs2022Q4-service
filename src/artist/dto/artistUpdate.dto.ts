@@ -7,7 +7,7 @@ export class UpdateArtistDTO {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 'No', description: 'boolean value' })
+  @ApiProperty({ example: true, description: 'boolean value' })
   @IsNotEmpty()
   @IsBoolean()
   grammy: boolean;

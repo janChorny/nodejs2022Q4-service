@@ -12,7 +12,7 @@ export class ArtistScheme {
   })
   name!: string;
   @ApiProperty({
-    example: 'Yes',
+    example: true,
     description: 'Has an artist grammy or not',
   })
   grammy!: boolean;

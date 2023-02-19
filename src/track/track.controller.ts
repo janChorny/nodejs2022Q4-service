@@ -19,7 +19,7 @@ import { TrackService } from './track.service';
 @ApiTags('Tracks')
 @Controller('track')
 export class TrackController {
-  constructor(private trackService: TrackService) { }
+  constructor(private trackService: TrackService) {}
 
   @ApiOperation({ summary: 'Get all tracks' })
   @ApiResponse({ status: HttpStatus.OK, type: [TrackScheme] })
@@ -37,7 +37,7 @@ export class TrackController {
     return this.trackService.getTrack(trackId);
   }
 
-  @ApiOperation({ summary: 'Create Artist' })
+  @ApiOperation({ summary: 'Create Track' })
   @ApiResponse({ status: HttpStatus.CREATED, type: TrackScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()

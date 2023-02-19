@@ -15,7 +15,7 @@ import { FavoriteService } from './favorites.service';
 @ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
-  constructor(private favoriteService: FavoriteService) { }
+  constructor(private favoriteService: FavoriteService) {}
 
   @ApiOperation({ summary: 'Get all favorites' })
   @ApiResponse({ status: HttpStatus.OK, type: [FavoriteScheme] })
@@ -33,6 +33,7 @@ export class FavoritesController {
     return await this.favoriteService.addTrackToFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Remove track from favorites' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('track/:id')
@@ -48,6 +49,7 @@ export class FavoritesController {
     return await this.favoriteService.addAlbumsIdFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Remove album from favorites' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('album/:id')
@@ -63,6 +65,7 @@ export class FavoritesController {
     return await this.favoriteService.addArtistToFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Remove artist from favorites' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('artist/:id')
