@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
 import { v4 } from 'uuid';
-import { UpdatePasswordDTO } from './dto/userUpdate.dto';
+import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
 
 @Injectable()
 export class UserService {
@@ -24,12 +24,18 @@ export class UserService {
 
   async findAll() {
     const users = await this.userRepository.find();
-    return users;
+    return users.map((user) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...result } = user;
+      return result;
+    });
   }
 
   async findOne(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
-    if (user) return user;
+    if (user) {
+      return user;
+    }
     throw new NotFoundException(`User with id = ${userId} was not found`);
   }
 

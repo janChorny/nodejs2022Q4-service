@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserScheme {
+export class UserPassScheme {
   @ApiProperty({
     example: '123e4567-e89b-12d3-a456-426614174000',
     description: 'UserId as UUID',
@@ -26,4 +26,9 @@ export class UserScheme {
     description: 'Timestamp of update',
   })
   updatedAt!: number;
+  @ApiProperty({
+    example: 'qwerty',
+    description: 'User password',
+  })
+  password?: string;
 }

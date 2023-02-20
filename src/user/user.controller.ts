@@ -12,14 +12,15 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/userCreate.dto';
-import { UpdatePasswordDTO } from './dto/userUpdate.dto';
+import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
 import { UserScheme } from '../utils/schemes/user.scheme';
 import { UserService } from './user.service';
+import { UserPassScheme } from 'src/utils/schemes/userPass.scheme';
 
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: HttpStatus.OK, type: [UserScheme] })
@@ -30,14 +31,14 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Get user by id' })
-  @ApiResponse({ status: HttpStatus.OK, type: UserScheme })
+  @ApiResponse({ status: HttpStatus.OK, type: UserPassScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':userId')
   getUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
     return this.userService.findOne(userId);
   }
 
-  @ApiOperation({ summary: 'Create User' })
+  @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: HttpStatus.CREATED, type: UserScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
