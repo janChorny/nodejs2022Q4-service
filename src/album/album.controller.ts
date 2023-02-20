@@ -25,24 +25,24 @@ export class AlbumController {
   @ApiResponse({ status: HttpStatus.OK, type: [AlbumScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllAlbums() {
-    return this.albumService.getAllAlbums();
+  async getAllAlbums() {
+    return await this.albumService.getAllAlbums();
   }
 
   @ApiOperation({ summary: 'Get album by id' })
   @ApiResponse({ status: HttpStatus.OK, type: AlbumScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':albumId')
-  getAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string) {
-    return this.albumService.getAlbum(albumId);
+  async getAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string) {
+    return await this.albumService.getAlbum(albumId);
   }
 
   @ApiOperation({ summary: 'Create Album' })
   @ApiResponse({ status: HttpStatus.CREATED, type: AlbumScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createAlbum(@Body() createAlbumDTO: CreateAlbumDTO) {
-    return this.albumService.createAlbum(createAlbumDTO);
+  async createAlbum(@Body() createAlbumDTO: CreateAlbumDTO) {
+    return await this.albumService.createAlbum(createAlbumDTO);
   }
 
   @ApiOperation({
@@ -51,11 +51,11 @@ export class AlbumController {
   @ApiResponse({ status: HttpStatus.OK, type: AlbumScheme })
   @HttpCode(HttpStatus.OK)
   @Put(':albumId')
-  updateAlbum(
+  async updateAlbum(
     @Param('albumId', new ParseUUIDPipe()) albumId: string,
     @Body() updateAlbumDTO: UpdateAlbumDTO,
   ) {
-    return this.albumService.updateAlbum(albumId, updateAlbumDTO);
+    return await this.albumService.updateAlbum(albumId, updateAlbumDTO);
   }
 
   @ApiOperation({
@@ -64,7 +64,7 @@ export class AlbumController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.albumService.deleteAlbum(id);
+  async deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.albumService.deleteAlbum(id);
   }
 }

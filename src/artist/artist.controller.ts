@@ -19,30 +19,30 @@ import { UpdateArtistDTO } from './dto/artistUpdate.dto';
 @ApiTags('Artists')
 @Controller('artist')
 export class ArtistController {
-  constructor(private artistService: ArtistService) { }
+  constructor(private artistService: ArtistService) {}
 
   @ApiOperation({ summary: 'Get all artists' })
   @ApiResponse({ status: HttpStatus.OK, type: [ArtistScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllArtists() {
-    return this.artistService.getAllArtists();
+  async getAllArtists() {
+    return await this.artistService.getAllArtists();
   }
 
   @ApiOperation({ summary: 'Get artist by id' })
   @ApiResponse({ status: HttpStatus.OK, type: ArtistScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':artistId')
-  getArtist(@Param('artistId', new ParseUUIDPipe()) artistId: string) {
-    return this.artistService.getArtist(artistId);
+  async getArtist(@Param('artistId', new ParseUUIDPipe()) artistId: string) {
+    return await this.artistService.getArtist(artistId);
   }
 
   @ApiOperation({ summary: 'Create Artist' })
   @ApiResponse({ status: HttpStatus.CREATED, type: ArtistScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createArtist(@Body() createArtistDTO: CreateArtistDTO) {
-    return this.artistService.createArtist(createArtistDTO);
+  async createArtist(@Body() createArtistDTO: CreateArtistDTO) {
+    return await this.artistService.createArtist(createArtistDTO);
   }
 
   @ApiOperation({
@@ -51,11 +51,11 @@ export class ArtistController {
   @ApiResponse({ status: HttpStatus.OK, type: ArtistScheme })
   @HttpCode(HttpStatus.OK)
   @Put(':artistId')
-  updateArtist(
+  async updateArtist(
     @Param('artistId', new ParseUUIDPipe()) artistId: string,
     @Body() updateArtistDTO: UpdateArtistDTO,
   ) {
-    return this.artistService.updateArtist(artistId, updateArtistDTO);
+    return await this.artistService.updateArtist(artistId, updateArtistDTO);
   }
 
   @ApiOperation({
@@ -64,7 +64,7 @@ export class ArtistController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.artistService.deleteArtist(id);
+  async deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.artistService.deleteArtist(id);
   }
 }

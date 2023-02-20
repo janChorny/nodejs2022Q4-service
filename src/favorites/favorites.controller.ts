@@ -9,7 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AlbumScheme } from 'src/utils/schemes/album.scheme';
+import { ArtistScheme } from 'src/utils/schemes/artist.scheme';
 import { FavoriteScheme } from 'src/utils/schemes/favorite.scheme';
+import { TrackScheme } from 'src/utils/schemes/track.scheme';
 import { FavoriteService } from './favorites.service';
 
 @ApiTags('Favorites')
@@ -26,7 +29,7 @@ export class FavoritesController {
   }
 
   @ApiOperation({ summary: 'Add track to favorites' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: [FavoriteScheme] })
+  @ApiResponse({ status: HttpStatus.CREATED, type: TrackScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post('track/:id')
   async addTrackToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
@@ -42,7 +45,7 @@ export class FavoritesController {
   }
 
   @ApiOperation({ summary: 'Add album to favorites' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: [FavoriteScheme] })
+  @ApiResponse({ status: HttpStatus.CREATED, type: AlbumScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post('album/:id')
   async addAlbumToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
@@ -58,7 +61,7 @@ export class FavoritesController {
   }
 
   @ApiOperation({ summary: 'Add artist to favorites' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: [FavoriteScheme] })
+  @ApiResponse({ status: HttpStatus.CREATED, type: ArtistScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post('artist/:id')
   async addArtistToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {

@@ -13,8 +13,8 @@ export class UpdateAlbumDTO {
   year: number;
 
   @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'string value',
+    example: null,
+    description: 'string value or null by default',
   })
   @IsOptional()
   @IsString()

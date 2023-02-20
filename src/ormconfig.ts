@@ -13,6 +13,6 @@ export default {
   synchronize: true,
   entities: ['dist/**/entities/*.entity.js'],
   migrations: ['dist/**/migration/*.js'],
-  logging: true,
+  logging: false,
   autoLoadEntities: true,
 } as DataSourceOptions;
