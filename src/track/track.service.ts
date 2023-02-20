@@ -58,7 +58,7 @@ export class TrackService {
     return await this.trackRepository.findOneBy({ id: trackId });
   }
 
-  async deleteTrack(id: string) {
+  public async deleteTrack(id: string) {
     const track = await this.trackRepository.findOneBy({ id });
     if (!track) {
       throw new NotFoundException(`Track with id = ${id} was not found`);

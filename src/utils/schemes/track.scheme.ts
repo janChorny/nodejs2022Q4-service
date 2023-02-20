@@ -12,18 +12,18 @@ export class TrackScheme {
   })
   name!: string;
   @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'Artist Id',
+    example: 500,
+    description: 'Track duration in seconds',
+  })
+  duration!: number;
+  @ApiProperty({
+    example: null,
+    description: 'Artist (string or null by default)',
   })
   artistId: string | null;
   @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'Album Id',
+    example: null,
+    description: 'Album Id (string or null by default)',
   })
   albumId: string | null;
-  @ApiProperty({
-    example: '1:00',
-    description: 'Track duration',
-  })
-  duration!: number;
 }

@@ -15,7 +15,7 @@ import { CreateUserDTO } from './dto/userCreate.dto';
 import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
 import { UserScheme } from '../utils/schemes/user.scheme';
 import { UserService } from './user.service';
-import { UserPassScheme } from 'src/utils/schemes/userPass.scheme';
+import { UserPassScheme } from 'src/utils/schemes/user.scheme';
 
 @ApiTags('Users')
 @Controller('user')
@@ -26,24 +26,24 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: [UserScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllUsers() {
-    return this.userService.findAll();
+  async getAllUsers() {
+    return await this.userService.findAll();
   }
 
   @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: HttpStatus.OK, type: UserPassScheme })
   @HttpCode(HttpStatus.OK)
   @Get(':userId')
-  getUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
-    return this.userService.findOne(userId);
+  async getUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
+    return await this.userService.findOne(userId);
   }
 
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: HttpStatus.CREATED, type: UserScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createUser(@Body() createUserDTO: CreateUserDTO) {
-    return this.userService.create(createUserDTO);
+  async createUser(@Body() createUserDTO: CreateUserDTO) {
+    return await this.userService.create(createUserDTO);
   }
 
   @ApiOperation({
@@ -52,11 +52,11 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: UserScheme })
   @HttpCode(HttpStatus.OK)
   @Put(':userId')
-  updateUserPassword(
+  async updateUserPassword(
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body() updateUserPasswordDTO: UpdatePasswordDTO,
   ) {
-    return this.userService.update(userId, updateUserPasswordDTO);
+    return await this.userService.update(userId, updateUserPasswordDTO);
   }
 
   @ApiOperation({
@@ -65,7 +65,7 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':userId')
-  deleteUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
-    return this.userService.delete(userId);
+  async deleteUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
+    return await this.userService.delete(userId);
   }
 }

@@ -7,22 +7,22 @@ export class UpdateTrackDTO {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: '1:00', description: 'number value' })
+  @ApiProperty({ example: 500, description: 'duration in seconds' })
   @IsNotEmpty()
   @IsNumber()
   duration: number;
 
   @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'string value',
+    example: null,
+    description: 'string value or null by default',
   })
   @IsOptional()
   @IsString()
   artistId: string;
 
   @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'string value',
+    example: null,
+    description: 'string value or null by default',
   })
   @IsOptional()
   @IsString()
