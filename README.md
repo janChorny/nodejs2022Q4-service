@@ -72,6 +72,25 @@ npm run lint
 npm run format
 ```
 
+### Testing with swagger
+
+Run Postgress Admin 4
+
+than run the server in dev or prod mode:
+
+```
+npm run start
+```
+
+or
+
+```
+npm run start:dev
+```
+
+After that visit `http://localhost:${PORT}/api/docs` and test API
+
+
 ### Debugging in VSCode
 
 Press <kbd>F5</kbd> to debug.
