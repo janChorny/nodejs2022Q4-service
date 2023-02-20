@@ -114,6 +114,7 @@ docker container commit <container id> <repo-name>
 ```
 docker image tag <repo-name> <repo-name>:<tag-name>
 ```
+
 ```
 docker push <repo-name>:<tag-name>
 ```
