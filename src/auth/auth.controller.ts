@@ -1,5 +1,6 @@
-import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/utils/models/models';
 import { AuthService } from './auth.service';
 
 @ApiTags('Auth')
@@ -11,8 +12,8 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK })
   @HttpCode(HttpStatus.OK)
   @Post('signup')
-  async singUp() {
-    return await this.authService.signUp();
+  async singUp(@Body() user: User) {
+    return await this.authService.signUp(user);
   }
 
   @ApiOperation({ summary: 'Login' })
