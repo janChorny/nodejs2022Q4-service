@@ -7,6 +7,7 @@ import { TrackModule } from './track/track.module';
 import { AlbumModule } from './album/album.module';
 import { ArtistModule } from './artist/artist.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { AuthModule } from './auth/auth.module';
 
 async function bootstrap() {
   const PORT = Number(process.env.PORT) || 4000;
@@ -20,6 +21,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config, {
     include: [
+      AuthModule,
       UserModule,
       TrackModule,
       AlbumModule,
