@@ -6,6 +6,7 @@ import { UserEntity } from './entities/user.entity';
 import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
 import { v4 } from 'uuid';
 import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -15,10 +16,14 @@ export class UserService {
   ) {}
 
   async create(userDTO: CreateUserDTO) {
+    userDTO.password = await hash(
+      userDTO.password,
+      Number(process.env.CRYPT_SALT),
+    );
     const createdUser = this.userRepository.create({ ...userDTO, id: v4() });
     await this.userRepository.save(createdUser);
     const result = { ...createdUser };
-    delete result.password;
+    // delete result.password;
     return result;
   }
 
@@ -65,6 +70,11 @@ export class UserService {
       );
     }
 
+    userPasswordDto.newPassword = await hash(
+      userPasswordDto.newPassword,
+      Number(process.env.CRYPT_SALT),
+    );
+
     await this.userRepository.update(userId, {
       password: userPasswordDto.newPassword,
       version: userToUpdate.version + 1,
@@ -75,7 +85,7 @@ export class UserService {
       where: { id: userId },
     });
     const result = { ...updatedUser };
-    delete result.password;
+    // delete result.password;
     return result;
   }
 

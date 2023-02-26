@@ -1,47 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common/enums';
-import { HttpException } from '@nestjs/common/exceptions';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDTO } from 'src/user/dto/userCreate.dto';
-import { UserService } from 'src/user/user.service';
-import { User } from '../utils/models/models';
 import * as bcrypt from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { RefreshTokenDTO } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private userService: UserService,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
   async signUp(userDTO: CreateUserDTO) {
-    const candidate = await this.userService.findOne(userDTO.login);
-    if (candidate) {
-      throw new HttpException(
-        `User with login=${userDTO.login} already exists`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const hashPassword = await bcrypt.hash(userDTO.password, 10);
-    const user = this.userService.create({
-      ...userDTO,
-      password: hashPassword,
+    return this.usersRepository.create(userDTO);
+  }
+
+  async login(userDTO: CreateUserDTO) {
+    const user = await this.usersRepository.findOne({
+      where: { login: userDTO.login },
     });
-    return await this.generateToken(user);
+    if (!user) throw new NotFoundException(`User not found`);
+
+    const passwordCheck = this.checkPassword(userDTO.password, user.password);
+    if (!passwordCheck) throw new BadRequestException(`Wrong password`);
+
+    const tokens = this.generateToken(user.id, user.login);
+    return tokens;
   }
 
-  async login() {
-    console.log();
+  async refresh(tokenDTO: RefreshTokenDTO) {
+    const user = await this.jwtService.verifyAsync(tokenDTO.refreshToken);
+    if (!user) throw new ForbiddenException();
+    return await this.generateToken(user.id, user.login);
   }
 
-  async refresh() {
-    console.log();
+  async generateToken(id: string, login: string) {
+    const [baseToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        { id, login },
+        { expiresIn: process.env.TOKEN_EXPIRE_TIME },
+      ),
+      this.jwtService.signAsync(
+        { id, login },
+        { expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME },
+      ),
+    ]);
+    const tokens = { baseToken, refreshToken };
+    return tokens;
   }
 
-  async generateToken(user: User) {
-    const payload = { id: user.id, login: user.login };
-    return {
-      token: this.jwtService.sign(payload),
-    };
+  async checkPassword(password: string, hashedPassword: string) {
+    return await bcrypt.compare(password, hashedPassword);
   }
 }

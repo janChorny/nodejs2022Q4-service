@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsJWT, IsNotEmpty, IsString } from 'class-validator';
 
 export class AuthDTO {
   @IsString()
@@ -13,5 +13,6 @@ export class AuthDTO {
 export class RefreshTokenDTO {
   @IsString()
   @IsNotEmpty()
+  @IsJWT()
   refreshToken: string;
 }
