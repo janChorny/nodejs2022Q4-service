@@ -11,7 +11,6 @@ export class AuthDTO {
 }
 
 export class RefreshTokenDTO {
-  @IsString()
   @IsNotEmpty()
   @IsJWT()
   refreshToken: string;
