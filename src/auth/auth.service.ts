@@ -15,13 +15,13 @@ import { RefreshTokenDTO } from './dto/auth.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signUp(userDTO: CreateUserDTO) {
-    return this.usersRepository.create(userDTO);
+    return this.usersRepository.save(userDTO);
   }
 
   async login(userDTO: CreateUserDTO) {
@@ -38,13 +38,15 @@ export class AuthService {
   }
 
   async refresh(tokenDTO: RefreshTokenDTO) {
-    const user = await this.jwtService.verifyAsync(tokenDTO.refreshToken);
+    const user = await this.jwtService.verifyAsync<UserEntity>(
+      tokenDTO.refreshToken,
+    );
     if (!user) throw new ForbiddenException();
     return await this.generateToken(user.id, user.login);
   }
 
   async generateToken(id: string, login: string) {
-    const [baseToken, refreshToken] = await Promise.all([
+    const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         { id, login },
         { expiresIn: process.env.TOKEN_EXPIRE_TIME },
@@ -54,7 +56,7 @@ export class AuthService {
         { expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME },
       ),
     ]);
-    const tokens = { baseToken, refreshToken };
+    const tokens = { accessToken, refreshToken };
     return tokens;
   }
 

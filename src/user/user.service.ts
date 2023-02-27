@@ -3,10 +3,14 @@ import { CreateUserDTO } from './dto/userCreate.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
-import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
+import {
+  ForbiddenException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { v4 } from 'uuid';
 import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -23,7 +27,7 @@ export class UserService {
     const createdUser = this.userRepository.create({ ...userDTO, id: v4() });
     await this.userRepository.save(createdUser);
     const result = { ...createdUser };
-    // delete result.password;
+    delete result.password;
     return result;
   }
 
@@ -63,11 +67,13 @@ export class UserService {
       );
     }
 
-    if (userToUpdate.password !== userPasswordDto.oldPassword) {
-      throw new HttpException(
-        `Previous password is wrong`,
-        HttpStatus.FORBIDDEN,
-      );
+    const checkPass = await compare(
+      userPasswordDto.oldPassword,
+      userToUpdate.password,
+    );
+
+    if (!checkPass) {
+      throw new ForbiddenException('Wrong password');
     }
 
     userPasswordDto.newPassword = await hash(
@@ -85,7 +91,7 @@ export class UserService {
       where: { id: userId },
     });
     const result = { ...updatedUser };
-    // delete result.password;
+    delete result.password;
     return result;
   }
 

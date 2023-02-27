@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from 'src/user/dto/userCreate.dto';
 import { AuthService } from './auth.service';
@@ -29,7 +36,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK })
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
-  async refresh(@Body() tokenDTO: RefreshTokenDTO) {
+  async refresh(@Body(new ValidationPipe()) tokenDTO: RefreshTokenDTO) {
     return await this.authService.refresh(tokenDTO);
   }
 }

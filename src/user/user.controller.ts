@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/userCreate.dto';
@@ -16,9 +17,11 @@ import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
 import { UserScheme } from '../utils/schemes/user.scheme';
 import { UserService } from './user.service';
 import { UserPassScheme } from 'src/utils/schemes/user.scheme';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 
 @ApiTags('Users')
 @Controller('user')
+@UseGuards(AccessGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 

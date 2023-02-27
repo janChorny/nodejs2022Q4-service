@@ -9,8 +9,10 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 import { ArtistScheme } from 'src/utils/schemes/artist.scheme';
 import { ArtistService } from './artist.service';
 import { CreateArtistDTO } from './dto/artistCreate.dto';
@@ -18,6 +20,7 @@ import { UpdateArtistDTO } from './dto/artistUpdate.dto';
 
 @ApiTags('Artists')
 @Controller('artist')
+@UseGuards(AccessGuard)
 export class ArtistController {
   constructor(private artistService: ArtistService) {}
 
