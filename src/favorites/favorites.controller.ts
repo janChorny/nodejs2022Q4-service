@@ -3,130 +3,78 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
-import { dataBase } from 'src/constants/constants';
-import { TrackService } from 'src/track/track.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AlbumScheme } from 'src/utils/schemes/album.scheme';
+import { ArtistScheme } from 'src/utils/schemes/artist.scheme';
+import { FavoriteScheme } from 'src/utils/schemes/favorite.scheme';
+import { TrackScheme } from 'src/utils/schemes/track.scheme';
 import { FavoriteService } from './favorites.service';
 
+@ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
-  constructor(
-    private artistService: ArtistService,
-    private trackService: TrackService,
-    private albumService: AlbumService,
-    private favoriteService: FavoriteService,
-  ) {}
+  constructor(private favoriteService: FavoriteService) {}
 
+  @ApiOperation({ summary: 'Get all favorites' })
+  @ApiResponse({ status: HttpStatus.OK, type: [FavoriteScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllFavorites() {
-    const favoriteArtists = dataBase.favorites.artists.map((id) =>
-      this.artistService.getArtist(id),
-    );
-    const favoriteAlbums = dataBase.favorites.albums.map((id) =>
-      this.albumService.getAlbum(id),
-    );
-    const favoriteTracks = dataBase.favorites.tracks.map((id) =>
-      this.trackService.getTrack(id),
-    );
-    return {
-      artists: favoriteArtists,
-      albums: favoriteAlbums,
-      tracks: favoriteTracks,
-    };
+  async getAllFavorites() {
+    return await this.favoriteService.getAllFavorites();
   }
 
+  @ApiOperation({ summary: 'Add track to favorites' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: TrackScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post('track/:id')
-  addTrackToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrack(id);
-    if (!track) {
-      throw new HttpException(
-        `Track with such id doesn't exist`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    this.favoriteService.addTrackIdToFavorites(id);
-    return track;
+  async addTrackToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.favoriteService.addTrackToFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Remove track from favorites' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('track/:id')
-  deleteTrackFromFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
-    const favoriteTrack = dataBase.favorites.tracks.find(
-      (trackID) => trackID === id,
-    );
-    if (!favoriteTrack) {
-      throw new HttpException(
-        `This is a not favorite track`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return this.favoriteService.deleteTrackIdFromFavorites(id);
+  async deleteTrackFromFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.favoriteService.deleteTrackFromFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Add album to favorites' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: AlbumScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post('album/:id')
-  addAlbumToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
-    const album = this.albumService.getAlbum(id);
-    if (!album) {
-      throw new HttpException(
-        `Album with such id doesn't exist`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    this.favoriteService.addAlbumsIdFavorites(id);
-    return album;
+  async addAlbumToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.favoriteService.addAlbumsIdFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Remove album from favorites' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('album/:id')
-  deleteAlbumFromFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
-    const favoriteAlbum = dataBase.favorites.albums.find(
-      (albumID) => albumID === id,
-    );
-    if (!favoriteAlbum) {
-      throw new HttpException(
-        `This is a not favorite album`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return this.favoriteService.deleteAlbumsIdFromFavorites(id);
+  async deleteAlbumFromFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.favoriteService.deleteAlbumsFromFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Add artist to favorites' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: ArtistScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post('artist/:id')
-  addArtistToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
-    const artist = this.artistService.getArtist(id);
-    if (!artist) {
-      throw new HttpException(
-        `Album with such id doesn't exist`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    this.favoriteService.addArtistIdToFavorites(id);
-    return artist;
+  async addArtistToFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.favoriteService.addArtistToFavorites(id);
   }
 
+  @ApiOperation({ summary: 'Remove artist from favorites' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('artist/:id')
-  deleteArtistFromFavorites(@Param('id', new ParseUUIDPipe()) id: string) {
-    const favoriteArtist = dataBase.favorites.artists.find(
-      (artistID) => artistID === id,
-    );
-    if (!favoriteArtist) {
-      throw new HttpException(
-        `This is a not favorite album`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return this.favoriteService.deleteArtistIdFromFavorites(id);
+  async deleteArtistFromFavorites(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ) {
+    return await this.favoriteService.deleteArtistFromFavorites(id);
   }
 }

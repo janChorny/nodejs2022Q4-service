@@ -4,88 +4,68 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from './dto/userCreate.dto';
-import { UpdatePasswordDTO } from './dto/userUpdate.dto';
+import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
+import { UserScheme } from '../utils/schemes/user.scheme';
 import { UserService } from './user.service';
+import { UserPassScheme } from 'src/utils/schemes/user.scheme';
 
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: HttpStatus.OK, type: [UserScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllUsers() {
-    return this.userService.getAllUsers();
+  async getAllUsers() {
+    return await this.userService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get user by id' })
+  @ApiResponse({ status: HttpStatus.OK, type: UserPassScheme })
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  getUser(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.getUser(id);
-    if (!user) {
-      throw new HttpException(
-        `User with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return user;
+  @Get(':userId')
+  async getUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
+    return await this.userService.findOne(userId);
   }
 
+  @ApiOperation({ summary: 'Create user' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: UserScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createUser(@Body() createUserDTO: CreateUserDTO) {
-    return this.userService.createUser(createUserDTO);
+  async createUser(@Body() createUserDTO: CreateUserDTO) {
+    return await this.userService.create(createUserDTO);
   }
 
+  @ApiOperation({
+    summary: 'Update user by id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: UserScheme })
   @HttpCode(HttpStatus.OK)
-  @Put(':id')
-  updateUserPassword(
-    @Param('id', new ParseUUIDPipe()) id: string,
+  @Put(':userId')
+  async updateUserPassword(
+    @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body() updateUserPasswordDTO: UpdatePasswordDTO,
   ) {
-    const { oldPassword, newPassword } = updateUserPasswordDTO;
-    if (!oldPassword && !newPassword) {
-      throw new HttpException(
-        `Not all the required fields are provided`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const user = this.userService.getUser(id);
-    if (!user) {
-      throw new HttpException(
-        `User with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    if (user.password !== oldPassword) {
-      throw new HttpException(
-        `Old user's password is wrong`,
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
-    return this.userService.updateUserPassword(id, updateUserPasswordDTO);
+    return await this.userService.update(userId, updateUserPasswordDTO);
   }
 
+  @ApiOperation({
+    summary: 'Delete user by id',
+  })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':id')
-  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
-    const user = this.userService.getUser(id);
-    if (!user) {
-      throw new HttpException(
-        `User with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return this.userService.deleteUser(id);
+  @Delete(':userId')
+  async deleteUser(@Param('userId', new ParseUUIDPipe()) userId: string) {
+    return await this.userService.delete(userId);
   }
 }

@@ -1,4 +1,4 @@
-import { DataBase, StatusCodeMessageSpec } from 'src/models/models';
+import { DataBase, StatusCodeMessageSpec } from 'src/utils/models/models';
 
 export enum StatusCodeText {
   USER_ID_INVALID = 'User ID is invalid (not uuid).',

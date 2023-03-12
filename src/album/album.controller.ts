@@ -4,97 +4,67 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
-import { dataBase } from 'src/constants/constants';
-import { TrackService } from 'src/track/track.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AlbumScheme } from 'src/utils/schemes/album.scheme';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
 import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
 
+@ApiTags('Albums')
 @Controller('album')
 export class AlbumController {
-  constructor(
-    private albumService: AlbumService,
-    private trackService: TrackService,
-  ) {}
+  constructor(private albumService: AlbumService) {}
 
+  @ApiOperation({ summary: 'Get all albums' })
+  @ApiResponse({ status: HttpStatus.OK, type: [AlbumScheme] })
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllAlbums() {
-    return this.albumService.getAllAlbums();
+  async getAllAlbums() {
+    return await this.albumService.getAllAlbums();
   }
 
+  @ApiOperation({ summary: 'Get album by id' })
+  @ApiResponse({ status: HttpStatus.OK, type: AlbumScheme })
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  getAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    const album = this.albumService.getAlbum(id);
-    if (!album) {
-      throw new HttpException(
-        `Album with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return album;
+  @Get(':albumId')
+  async getAlbum(@Param('albumId', new ParseUUIDPipe()) albumId: string) {
+    return await this.albumService.getAlbum(albumId);
   }
 
+  @ApiOperation({ summary: 'Create Album' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: AlbumScheme })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createAlbum(@Body() createAlbumDTO: CreateAlbumDTO) {
-    return this.albumService.createAlbum(createAlbumDTO);
+  async createAlbum(@Body() createAlbumDTO: CreateAlbumDTO) {
+    return await this.albumService.createAlbum(createAlbumDTO);
   }
 
+  @ApiOperation({
+    summary: 'Update album by id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: AlbumScheme })
   @HttpCode(HttpStatus.OK)
-  @Put(':id')
-  updateAlbum(
-    @Param('id', new ParseUUIDPipe()) id: string,
+  @Put(':albumId')
+  async updateAlbum(
+    @Param('albumId', new ParseUUIDPipe()) albumId: string,
     @Body() updateAlbumDTO: UpdateAlbumDTO,
   ) {
-    const { name, year } = updateAlbumDTO;
-    if (typeof name !== 'string' || typeof year !== 'number') {
-      throw new HttpException(
-        `Not all the provided fields are valid`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const album = this.albumService.getAlbum(id);
-    if (!album) {
-      throw new HttpException(
-        `Album with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return this.albumService.updateAlbum(id, updateAlbumDTO);
+    return await this.albumService.updateAlbum(albumId, updateAlbumDTO);
   }
 
+  @ApiOperation({
+    summary: 'Delete album by id',
+  })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    const track = this.trackService.getTrackByAlbum(id);
-    if (track) {
-      this.trackService.updateTrack(track.id, {
-        artistId: track.artistId,
-        name: track.name,
-        albumId: null,
-        duration: track.duration,
-      });
-    }
-    const album = this.albumService.getAlbum(id);
-    if (!album) {
-      throw new HttpException(
-        `Album with such id is not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    dataBase.favorites.albums = dataBase.favorites.albums.filter(
-      (albumID) => albumID !== id,
-    );
-    return this.albumService.deleteAlbum(id);
+  async deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.albumService.deleteAlbum(id);
   }
 }

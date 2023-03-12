@@ -1,17 +1,30 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateTrackDTO {
+  @ApiProperty({ example: 'Innuendo', description: 'string value' })
   @IsNotEmpty()
   @IsString()
   name: string;
 
-  @IsNotEmpty()
-  artistId: string | null;
-
-  @IsNotEmpty()
-  albumId: string | null;
-
+  @ApiProperty({ example: 500, description: 'duration in seconds' })
   @IsNotEmpty()
   @IsNumber()
   duration: number;
+
+  @ApiProperty({
+    example: null,
+    description: 'string value or null by default',
+  })
+  @IsOptional()
+  @IsString()
+  artistId: string;
+
+  @ApiProperty({
+    example: null,
+    description: 'string value or null by default',
+  })
+  @IsOptional()
+  @IsString()
+  albumId: string;
 }
