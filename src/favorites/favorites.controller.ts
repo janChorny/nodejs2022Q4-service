@@ -7,8 +7,10 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 import { AlbumScheme } from 'src/utils/schemes/album.scheme';
 import { ArtistScheme } from 'src/utils/schemes/artist.scheme';
 import { FavoriteScheme } from 'src/utils/schemes/favorite.scheme';
@@ -17,6 +19,7 @@ import { FavoriteService } from './favorites.service';
 
 @ApiTags('Favorites')
 @Controller('favs')
+@UseGuards(AccessGuard)
 export class FavoritesController {
   constructor(private favoriteService: FavoriteService) {}
 

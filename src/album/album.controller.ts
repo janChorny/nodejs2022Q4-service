@@ -9,8 +9,10 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 import { AlbumScheme } from 'src/utils/schemes/album.scheme';
 import { AlbumService } from './album.service';
 import { CreateAlbumDTO } from './dto/albumCreate.dto';
@@ -18,6 +20,7 @@ import { UpdateAlbumDTO } from './dto/albumUpdate.dto';
 
 @ApiTags('Albums')
 @Controller('album')
+@UseGuards(AccessGuard)
 export class AlbumController {
   constructor(private albumService: AlbumService) {}
 

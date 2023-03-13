@@ -3,9 +3,14 @@ import { CreateUserDTO } from './dto/userCreate.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
-import { HttpException, NotFoundException } from '@nestjs/common/exceptions';
+import {
+  ForbiddenException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 import { v4 } from 'uuid';
 import { UpdatePasswordDTO } from './dto/passwordUpdate.dto';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -15,6 +20,10 @@ export class UserService {
   ) {}
 
   async create(userDTO: CreateUserDTO) {
+    userDTO.password = await hash(
+      userDTO.password,
+      Number(process.env.CRYPT_SALT),
+    );
     const createdUser = this.userRepository.create({ ...userDTO, id: v4() });
     await this.userRepository.save(createdUser);
     const result = { ...createdUser };
@@ -58,12 +67,19 @@ export class UserService {
       );
     }
 
-    if (userToUpdate.password !== userPasswordDto.oldPassword) {
-      throw new HttpException(
-        `Previous password is wrong`,
-        HttpStatus.FORBIDDEN,
-      );
+    const checkPass = await compare(
+      userPasswordDto.oldPassword,
+      userToUpdate.password,
+    );
+
+    if (!checkPass) {
+      throw new ForbiddenException('Wrong password');
     }
+
+    userPasswordDto.newPassword = await hash(
+      userPasswordDto.newPassword,
+      Number(process.env.CRYPT_SALT),
+    );
 
     await this.userRepository.update(userId, {
       password: userPasswordDto.newPassword,
